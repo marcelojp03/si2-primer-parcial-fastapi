@@ -1,0 +1,1001 @@
+{
+  "info": {
+    "name": "Auxilio Mecánico API",
+    "description": "Colección completa de la API de Auxilio Mecánico – FastAPI Backend.\n\nFlujo: 1) Register → 2) Login → 3) Usar token en los demás endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('user_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Juan Pérez\",\n  \"ci\": \"12345678\",\n  \"phone\": \"+591 70000000\",\n  \"email\": \"juan@example.com\",\n  \"role\": \"CLIENTE\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('token', json.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?skip=0&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Juan Pérez Actualizado\",\n  \"phone\": \"+591 71111111\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workshops",
+      "item": [
+        {
+          "name": "Create Workshop",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('workshop_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Taller Central SCZ\",\n  \"description\": \"Taller multimarca 24h\",\n  \"phone\": \"+591 33000000\",\n  \"email\": \"taller@example.com\",\n  \"address\": \"Av. Cristo Redentor #500\",\n  \"latitude\": -17.7833,\n  \"longitude\": -63.1821,\n  \"has_tow\": true,\n  \"is_24_hours\": true,\n  \"admin_user_id\": {{user_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/workshops",
+              "host": ["{{base_url}}"],
+              "path": ["workshops"]
+            }
+          }
+        },
+        {
+          "name": "Get Workshop",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workshops/{{workshop_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["workshops", "{{workshop_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Workshops",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workshops?skip=0&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["workshops"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Workshop",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Taller Central SCZ - Actualizado\",\n  \"has_tow\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/workshops/{{workshop_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["workshops", "{{workshop_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "Create Vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('vehicle_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plate\": \"SCZ-1234\",\n  \"brand\": \"Toyota\",\n  \"model\": \"Corolla\",\n  \"manufacture_year\": 2022,\n  \"color\": \"Blanco\",\n  \"notes\": \"Vehículo principal\",\n  \"user_id\": {{user_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Get Vehicle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "{{vehicle_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List My Vehicles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Update Vehicle",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"color\": \"Negro\",\n  \"notes\": \"Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "{{vehicle_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incidents",
+      "item": [
+        {
+          "name": "Create Incident",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('incident_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_id\": {{vehicle_id}},\n  \"client_user_id\": {{user_id}},\n  \"title\": \"Llanta pinchada en carretera\",\n  \"description_text\": \"La llanta trasera derecha se pinchó en la carretera al norte\",\n  \"reference_address\": \"Km 5 carretera al norte\",\n  \"latitude\": -17.7700,\n  \"longitude\": -63.1700,\n  \"requires_tow\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": ["{{base_url}}"],
+              "path": ["incidents"]
+            }
+          }
+        },
+        {
+          "name": "Get Incident",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incidents", "{{incident_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Incidents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incidents?skip=0&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["incidents"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Incident",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority_level\": \"ALTA\",\n  \"requires_tow\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incidents", "{{incident_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Analysis",
+      "item": [
+        {
+          "name": "Run AI Analysis (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio",
+                  "type": "file",
+                  "src": "",
+                  "description": "Audio del usuario describiendo el incidente (mp3, wav, m4a, webm). Max 25MB."
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "",
+                  "description": "Foto 1 del daño (jpg, png, webp). Max 10MB."
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "",
+                  "description": "Foto 2 del daño (opcional)."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/ai-analysis/{{incident_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ai-analysis", "{{incident_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get AI Analysis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai-analysis/{{incident_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ai-analysis", "{{incident_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Specialties",
+      "item": [
+        {
+          "name": "Create Specialty",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('specialty_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ELECTRICIDAD\",\n  \"description\": \"Sistema eléctrico avanzado y diagnóstico\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/specialties",
+              "host": ["{{base_url}}"],
+              "path": ["specialties"]
+            }
+          }
+        },
+        {
+          "name": "Get Specialty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/specialties/{{specialty_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["specialties", "{{specialty_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Specialties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/specialties?skip=0&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["specialties"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "50" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Specialty",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/specialties/{{specialty_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["specialties", "{{specialty_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Technicians",
+      "item": [
+        {
+          "name": "Create Technician",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('technician_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workshop_id\": {{workshop_id}},\n  \"full_name\": \"Carlos Técnico\",\n  \"ci\": \"87654321\",\n  \"phone\": \"+591 72222222\",\n  \"notes\": \"Especialista en llantas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/technicians",
+              "host": ["{{base_url}}"],
+              "path": ["technicians"]
+            }
+          }
+        },
+        {
+          "name": "Get Technician",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/technicians/{{technician_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["technicians", "{{technician_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Technicians by Workshop",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/technicians/workshop/{{workshop_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["technicians", "workshop", "{{workshop_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Technician",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability_status\": \"DISPONIBLE\",\n  \"notes\": \"Nota actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/technicians/{{technician_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["technicians", "{{technician_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {
+          "name": "Assign Workshop to Incident",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    if (json.assignment_id) pm.collectionVariables.set('assignment_id', json.assignment_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/assignments/{{incident_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["assignments", "{{incident_id}}"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('payment_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_assignment_id\": {{assignment_id}},\n  \"client_user_id\": {{user_id}},\n  \"amount\": 150.00,\n  \"currency\": \"BOB\",\n  \"payment_method\": \"QR\",\n  \"payment_provider\": \"BNB\",\n  \"external_reference\": \"REF-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments",
+              "host": ["{{base_url}}"],
+              "path": ["payments"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{payment_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Payment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_status\": \"PAGADO\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{payment_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"incident_id\": {{incident_id}},\n  \"notification_type\": \"INCIDENTE_NUEVO\",\n  \"channel\": \"PUSH\",\n  \"title\": \"Nuevo incidente cerca\",\n  \"message\": \"Se reportó un incidente cerca de tu taller\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"]
+            }
+          }
+        },
+        {
+          "name": "List My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ratings",
+      "item": [
+        {
+          "name": "Create Rating",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('rating_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_assignment_id\": {{assignment_id}},\n  \"client_user_id\": {{user_id}},\n  \"score\": 5,\n  \"comment\": \"Excelente servicio, llegaron rápido\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ratings",
+              "host": ["{{base_url}}"],
+              "path": ["ratings"]
+            }
+          }
+        },
+        {
+          "name": "Get Rating",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ratings/{{rating_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ratings", "{{rating_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incident Types",
+      "item": [
+        {
+          "name": "Create Incident Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('incident_type_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pinchazo de llanta\",\n  \"description\": \"Pinchazo o reventón de neumático\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incident-types",
+              "host": ["{{base_url}}"],
+              "path": ["incident-types"]
+            },
+            "description": "Solo SUPERADMIN"
+          }
+        },
+        {
+          "name": "Get Incident Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incident-types/{{incident_type_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incident-types", "{{incident_type_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Incident Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incident-types?skip=0&limit=100",
+              "host": ["{{base_url}}"],
+              "path": ["incident-types"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "100" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Incident Type",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incident-types/{{incident_type_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incident-types", "{{incident_type_id}}"]
+            },
+            "description": "Solo SUPERADMIN"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incident Statuses",
+      "item": [
+        {
+          "name": "Create Incident Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('incident_status_id', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nuevo Estado\",\n  \"description\": \"Descripción del estado\",\n  \"sort_order\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incident-statuses",
+              "host": ["{{base_url}}"],
+              "path": ["incident-statuses"]
+            },
+            "description": "Solo SUPERADMIN"
+          }
+        },
+        {
+          "name": "Get Incident Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incident-statuses/{{incident_status_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incident-statuses", "{{incident_status_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Incident Statuses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/incident-statuses?skip=0&limit=100",
+              "host": ["{{base_url}}"],
+              "path": ["incident-statuses"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "100" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Incident Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/incident-statuses/{{incident_status_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["incident-statuses", "{{incident_status_id}}"]
+            },
+            "description": "Solo SUPERADMIN"
+          }
+        }
+      ]
+    }
+  ]
+}
