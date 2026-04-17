@@ -21,9 +21,7 @@ class Notification(Base):
         BigInteger,
         ForeignKey(f"{SCHEMA}.incidentes.id", onupdate="CASCADE", ondelete="SET NULL"),
     )
-    notification_type: Mapped[str] = mapped_column(
-        "tipo_notificacion", String(50), nullable=False
-    )
+    notification_type: Mapped[str] = mapped_column("tipo_notificacion", String(50), nullable=False)
     channel: Mapped[str] = mapped_column("canal", String(30), nullable=False)
     title: Mapped[str] = mapped_column("titulo", String(150), nullable=False)
     message: Mapped[str] = mapped_column("mensaje", String(255), nullable=False)

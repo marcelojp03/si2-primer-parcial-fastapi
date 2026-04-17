@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, String, DateTime, func
+from sqlalchemy import BigInteger, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -19,7 +19,9 @@ class User(Base):
         "correo_electronico", String(150), nullable=False, unique=True
     )
     password_hash: Mapped[str] = mapped_column("contrasena_hash", String(255), nullable=False)
-    status: Mapped[str] = mapped_column("estado", String(30), nullable=False, server_default="ACTIVO")
+    status: Mapped[str] = mapped_column(
+        "estado", String(30), nullable=False, server_default="ACTIVO"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )

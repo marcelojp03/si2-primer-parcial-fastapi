@@ -20,12 +20,16 @@ async def read_specialty(specialty_id: int, session: DbSession, _current_user: C
 
 
 @router.get("", response_model=list[SpecialtyRead])
-async def list_specialties(session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100):
+async def list_specialties(
+    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+):
     svc = SpecialtyService(session)
     return await svc.get_all(skip=skip, limit=limit)
 
 
 @router.patch("/{specialty_id}", response_model=SpecialtyRead)
-async def update_specialty(specialty_id: int, data: SpecialtyUpdate, session: DbSession, _admin: SuperAdminUser):
+async def update_specialty(
+    specialty_id: int, data: SpecialtyUpdate, session: DbSession, _admin: SuperAdminUser
+):
     svc = SpecialtyService(session)
     return await svc.update(specialty_id, data)

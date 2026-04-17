@@ -1,8 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, UploadFile
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, File, UploadFile
 
 from app.api.deps import CurrentUser, DbSession
 from app.schemas.ai_analysis import AiAnalysisRead
@@ -29,8 +28,12 @@ async def run_ai_analysis(
     incident_id: int,
     session: DbSession,
     _current_user: CurrentUser,
-    audio: Annotated[UploadFile | None, File(description="Audio file (webm, mp3, wav, ogg, m4a)")] = None,
-    images: Annotated[list[UploadFile] | None, File(description="Vehicle damage photos (jpg, png, webp)")] = None,
+    audio: Annotated[
+        UploadFile | None, File(description="Audio file (webm, mp3, wav, ogg, m4a)")
+    ] = None,
+    images: Annotated[
+        list[UploadFile] | None, File(description="Vehicle damage photos (jpg, png, webp)")
+    ] = None,
 ):
     """
     Run the full AI analysis pipeline for an incident.
@@ -44,12 +47,14 @@ async def run_ai_analysis(
     if audio and audio.filename:
         if audio.content_type not in ALLOWED_AUDIO_TYPES:
             from app.core.exceptions import BadRequestError
+
             raise BadRequestError(
                 f"Audio type '{audio.content_type}' not allowed. Use: {', '.join(ALLOWED_AUDIO_TYPES)}"
             )
         audio_bytes = await audio.read()
         if len(audio_bytes) > MAX_AUDIO_SIZE:
             from app.core.exceptions import BadRequestError
+
             raise BadRequestError("Audio file exceeds 25 MB limit")
         audio_filename = audio.filename
 
@@ -61,12 +66,14 @@ async def run_ai_analysis(
                 continue
             if img.content_type not in ALLOWED_IMAGE_TYPES:
                 from app.core.exceptions import BadRequestError
+
                 raise BadRequestError(
                     f"Image type '{img.content_type}' not allowed. Use: {', '.join(ALLOWED_IMAGE_TYPES)}"
                 )
             img_bytes = await img.read()
             if len(img_bytes) > MAX_IMAGE_SIZE:
                 from app.core.exceptions import BadRequestError
+
                 raise BadRequestError(f"Image '{img.filename}' exceeds 10 MB limit")
             image_data_list.append((img_bytes, img.content_type))
 
@@ -91,8 +98,9 @@ async def run_ai_analysis(
 async def get_ai_analysis(incident_id: int, session: DbSession, _current_user: CurrentUser):
     """Get the existing AI analysis for an incident."""
     from sqlalchemy import select
-    from app.models.incident_ai_analysis import IncidentAiAnalysis
+
     from app.core.exceptions import NotFoundError
+    from app.models.incident_ai_analysis import IncidentAiAnalysis
 
     stmt = select(IncidentAiAnalysis).where(IncidentAiAnalysis.incident_id == incident_id)
     result = await session.execute(stmt)

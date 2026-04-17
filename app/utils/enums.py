@@ -1,19 +1,19 @@
 import enum
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     SUPERADMIN = "superadmin"
     ADMIN_TALLER = "admin_taller"
     CLIENTE = "cliente"
 
 
-class UserStatus(str, enum.Enum):
+class UserStatus(enum.StrEnum):
     ACTIVO = "activo"
     INACTIVO = "inactivo"
     SUSPENDIDO = "suspendido"
 
 
-class Weekday(str, enum.Enum):
+class Weekday(enum.StrEnum):
     LUNES = "lunes"
     MARTES = "martes"
     MIERCOLES = "miercoles"
@@ -23,27 +23,27 @@ class Weekday(str, enum.Enum):
     DOMINGO = "domingo"
 
 
-class PriorityLevel(str, enum.Enum):
+class PriorityLevel(enum.StrEnum):
     BAJA = "baja"
     MEDIA = "media"
     ALTA = "alta"
     CRITICA = "critica"
 
 
-class EvidenceType(str, enum.Enum):
+class EvidenceType(enum.StrEnum):
     FOTO = "foto"
     VIDEO = "video"
     AUDIO = "audio"
     DOCUMENTO = "documento"
 
 
-class CandidateResponseStatus(str, enum.Enum):
+class CandidateResponseStatus(enum.StrEnum):
     PENDIENTE = "pendiente"
     ACEPTADO = "aceptado"
     RECHAZADO = "rechazado"
 
 
-class AssignmentStatus(str, enum.Enum):
+class AssignmentStatus(enum.StrEnum):
     ASIGNADO = "asignado"
     EN_CAMINO = "en_camino"
     EN_SITIO = "en_sitio"
@@ -52,40 +52,40 @@ class AssignmentStatus(str, enum.Enum):
     CANCELADO = "cancelado"
 
 
-class PaymentMethod(str, enum.Enum):
+class PaymentMethod(enum.StrEnum):
     EFECTIVO = "efectivo"
     QR = "qr"
     TARJETA = "tarjeta"
     TRANSFERENCIA = "transferencia"
 
 
-class PaymentStatus(str, enum.Enum):
+class PaymentStatus(enum.StrEnum):
     PENDIENTE = "pendiente"
     COMPLETADO = "completado"
     FALLIDO = "fallido"
     REEMBOLSADO = "reembolsado"
 
 
-class NotificationChannel(str, enum.Enum):
+class NotificationChannel(enum.StrEnum):
     PUSH = "push"
     SMS = "sms"
     EMAIL = "email"
     IN_APP = "in_app"
 
 
-class NotificationStatus(str, enum.Enum):
+class NotificationStatus(enum.StrEnum):
     PENDIENTE = "pendiente"
     ENVIADO = "enviado"
     LEIDO = "leido"
     FALLIDO = "fallido"
 
 
-class TechnicianAvailability(str, enum.Enum):
+class TechnicianAvailability(enum.StrEnum):
     DISPONIBLE = "disponible"
     OCUPADO = "ocupado"
     NO_DISPONIBLE = "no_disponible"
 
 
-class GeneralStatus(str, enum.Enum):
+class GeneralStatus(enum.StrEnum):
     ACTIVO = "activo"
     INACTIVO = "inactivo"

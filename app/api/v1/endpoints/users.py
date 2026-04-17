@@ -25,6 +25,8 @@ async def list_users(session: DbSession, _admin: SuperAdminUser, skip: int = 0, 
 
 
 @router.patch("/{user_id}", response_model=UserRead)
-async def update_user(user_id: int, data: UserUpdate, session: DbSession, _current_user: CurrentUser):
+async def update_user(
+    user_id: int, data: UserUpdate, session: DbSession, _current_user: CurrentUser
+):
     svc = UserService(session)
     return await svc.update(user_id, data)

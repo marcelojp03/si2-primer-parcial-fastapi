@@ -207,9 +207,7 @@ class AiService:
         # Step 1: Audio transcription
         audio_text = None
         if audio_bytes:
-            audio_text = await self.transcribe_audio(
-                audio_bytes, audio_filename or "audio.webm"
-            )
+            audio_text = await self.transcribe_audio(audio_bytes, audio_filename or "audio.webm")
 
         # Step 2: Image analysis
         image_desc = None

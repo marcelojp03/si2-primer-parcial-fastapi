@@ -88,11 +88,7 @@ async def seed_specialties(session: AsyncSession) -> None:
 
 
 async def _already_seeded(session: AsyncSession) -> bool:
-    result = await session.execute(
-        text(
-            "SELECT 1 FROM auxilio_mecanico.tipos_incidente LIMIT 1"
-        )
-    )
+    result = await session.execute(text("SELECT 1 FROM auxilio_mecanico.tipos_incidente LIMIT 1"))
     return result.scalar() is not None
 
 
@@ -101,7 +97,7 @@ async def init_db() -> None:
         await create_schema(session)
         try:
             if await _already_seeded(session):
-                logger.info("Database already seeded – skipping")
+                logger.info("Database already seeded - skipping")
                 return
         except Exception:
             pass  # table doesn't exist yet, will seed

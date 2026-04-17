@@ -1,5 +1,6 @@
 import logging
-from typing import Sequence
+from collections.abc import Sequence
+from datetime import UTC
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -34,10 +35,10 @@ class NotificationService:
                 data=extra,
             )
             if msg_id:
-                from datetime import datetime, timezone
+                from datetime import datetime
 
                 notification.status = "ENVIADO"
-                notification.sent_at = datetime.now(timezone.utc)
+                notification.sent_at = datetime.now(UTC)
                 await self.repo.update(notification, {"status": "ENVIADO"})
                 logger.info("Push sent for notification id=%d", notification.id)
 

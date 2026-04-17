@@ -26,6 +26,8 @@ async def list_my_vehicles(session: DbSession, current_user: CurrentUser):
 
 
 @router.patch("/{vehicle_id}", response_model=VehicleRead)
-async def update_vehicle(vehicle_id: int, data: VehicleUpdate, session: DbSession, _user: ClienteOrSuperAdmin):
+async def update_vehicle(
+    vehicle_id: int, data: VehicleUpdate, session: DbSession, _user: ClienteOrSuperAdmin
+):
     svc = VehicleService(session)
     return await svc.update(vehicle_id, data)

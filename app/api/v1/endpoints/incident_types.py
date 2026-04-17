@@ -8,7 +8,9 @@ router = APIRouter(prefix="/incident-types", tags=["incident-types"])
 
 
 @router.post("", response_model=IncidentTypeRead, status_code=201)
-async def create_incident_type(data: IncidentTypeCreate, session: DbSession, _admin: SuperAdminUser):
+async def create_incident_type(
+    data: IncidentTypeCreate, session: DbSession, _admin: SuperAdminUser
+):
     svc = IncidentTypeService(session)
     return await svc.create(data)
 
@@ -20,12 +22,16 @@ async def read_incident_type(type_id: int, session: DbSession, _current_user: Cu
 
 
 @router.get("", response_model=list[IncidentTypeRead])
-async def list_incident_types(session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100):
+async def list_incident_types(
+    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+):
     svc = IncidentTypeService(session)
     return await svc.get_all(skip=skip, limit=limit)
 
 
 @router.patch("/{type_id}", response_model=IncidentTypeRead)
-async def update_incident_type(type_id: int, data: IncidentTypeUpdate, session: DbSession, _admin: SuperAdminUser):
+async def update_incident_type(
+    type_id: int, data: IncidentTypeUpdate, session: DbSession, _admin: SuperAdminUser
+):
     svc = IncidentTypeService(session)
     return await svc.update(type_id, data)

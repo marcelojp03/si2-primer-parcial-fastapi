@@ -20,12 +20,16 @@ async def read_incident(incident_id: int, session: DbSession, _current_user: Cur
 
 
 @router.get("", response_model=list[IncidentRead])
-async def list_incidents(session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100):
+async def list_incidents(
+    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+):
     svc = IncidentService(session)
     return await svc.get_all(skip=skip, limit=limit)
 
 
 @router.patch("/{incident_id}", response_model=IncidentRead)
-async def update_incident(incident_id: int, data: IncidentUpdate, session: DbSession, _user: AdminTallerOrSuperAdmin):
+async def update_incident(
+    incident_id: int, data: IncidentUpdate, session: DbSession, _user: AdminTallerOrSuperAdmin
+):
     svc = IncidentService(session)
     return await svc.update(incident_id, data)

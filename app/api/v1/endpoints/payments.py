@@ -20,6 +20,8 @@ async def read_payment(payment_id: int, session: DbSession, _current_user: Curre
 
 
 @router.patch("/{payment_id}", response_model=PaymentRead)
-async def update_payment(payment_id: int, data: PaymentUpdate, session: DbSession, _admin: SuperAdminUser):
+async def update_payment(
+    payment_id: int, data: PaymentUpdate, session: DbSession, _admin: SuperAdminUser
+):
     svc = PaymentService(session)
     return await svc.update(payment_id, data)

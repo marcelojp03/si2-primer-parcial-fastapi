@@ -62,7 +62,9 @@ class Incident(Base):
     vehicle = relationship("Vehicle", back_populates="incidents")
     incident_type = relationship("IncidentType")
     incident_status = relationship("IncidentStatus")
-    evidences = relationship("IncidentEvidence", back_populates="incident", cascade="all, delete-orphan")
+    evidences = relationship(
+        "IncidentEvidence", back_populates="incident", cascade="all, delete-orphan"
+    )
     ai_analysis = relationship("IncidentAiAnalysis", back_populates="incident", uselist=False)
     status_history = relationship(
         "IncidentStatusHistory", back_populates="incident", cascade="all, delete-orphan"

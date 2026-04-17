@@ -2,8 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestError, ConflictError, UnauthorizedError
 from app.core.security import create_access_token, hash_password, verify_password
-from app.repositories.user_repository import UserRepository
 from app.models.user import User
+from app.repositories.user_repository import UserRepository
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.user import UserCreate
 from app.utils.enums import UserRole

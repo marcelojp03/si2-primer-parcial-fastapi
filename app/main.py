@@ -18,6 +18,7 @@ async def lifespan(app: FastAPI):
         await init_db()
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning("Could not connect to DB on startup: %s", e)
     yield
 

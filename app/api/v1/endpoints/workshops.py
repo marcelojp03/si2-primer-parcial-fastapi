@@ -20,12 +20,16 @@ async def read_workshop(workshop_id: int, session: DbSession, _current_user: Cur
 
 
 @router.get("", response_model=list[WorkshopRead])
-async def list_workshops(session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100):
+async def list_workshops(
+    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+):
     svc = WorkshopService(session)
     return await svc.get_all(skip=skip, limit=limit)
 
 
 @router.patch("/{workshop_id}", response_model=WorkshopRead)
-async def update_workshop(workshop_id: int, data: WorkshopUpdate, session: DbSession, _user: AdminTallerOrSuperAdmin):
+async def update_workshop(
+    workshop_id: int, data: WorkshopUpdate, session: DbSession, _user: AdminTallerOrSuperAdmin
+):
     svc = WorkshopService(session)
     return await svc.update(workshop_id, data)

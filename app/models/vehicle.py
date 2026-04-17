@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, DateTime, Integer, String, ForeignKey, func
+from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -23,7 +23,9 @@ class Vehicle(Base):
     manufacture_year: Mapped[int | None] = mapped_column("anio_fabricacion", Integer)
     color: Mapped[str | None] = mapped_column(String(50))
     notes: Mapped[str | None] = mapped_column("observaciones", String(255))
-    status: Mapped[str] = mapped_column("estado", String(30), nullable=False, server_default="ACTIVO")
+    status: Mapped[str] = mapped_column(
+        "estado", String(30), nullable=False, server_default="ACTIVO"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )

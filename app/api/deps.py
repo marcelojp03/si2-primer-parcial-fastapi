@@ -1,4 +1,5 @@
-from typing import Annotated, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -55,6 +56,8 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 # ── Role-scoped user dependencies ──────────────────────────────
 SuperAdminUser = Annotated[User, Depends(require_role(UserRole.SUPERADMIN))]
 AdminTallerUser = Annotated[User, Depends(require_role(UserRole.ADMIN_TALLER))]
-AdminTallerOrSuperAdmin = Annotated[User, Depends(require_role(UserRole.ADMIN_TALLER, UserRole.SUPERADMIN))]
+AdminTallerOrSuperAdmin = Annotated[
+    User, Depends(require_role(UserRole.ADMIN_TALLER, UserRole.SUPERADMIN))
+]
 ClienteUser = Annotated[User, Depends(require_role(UserRole.CLIENTE))]
 ClienteOrSuperAdmin = Annotated[User, Depends(require_role(UserRole.CLIENTE, UserRole.SUPERADMIN))]

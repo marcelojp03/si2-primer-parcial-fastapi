@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, DateTime, Numeric, String, ForeignKey, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -31,7 +31,9 @@ class Workshop(Base):
     is_24_hours: Mapped[bool] = mapped_column(
         "atiende_24_horas", Boolean, nullable=False, server_default="false"
     )
-    status: Mapped[str] = mapped_column("estado", String(30), nullable=False, server_default="ACTIVO")
+    status: Mapped[str] = mapped_column(
+        "estado", String(30), nullable=False, server_default="ACTIVO"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )
@@ -41,6 +43,12 @@ class Workshop(Base):
 
     # Relationships
     admin_user = relationship("User", back_populates="workshop")
-    schedules = relationship("WorkshopSchedule", back_populates="workshop", cascade="all, delete-orphan")
-    specialties = relationship("WorkshopSpecialty", back_populates="workshop", cascade="all, delete-orphan")
-    technicians = relationship("Technician", back_populates="workshop", cascade="all, delete-orphan")
+    schedules = relationship(
+        "WorkshopSchedule", back_populates="workshop", cascade="all, delete-orphan"
+    )
+    specialties = relationship(
+        "WorkshopSpecialty", back_populates="workshop", cascade="all, delete-orphan"
+    )
+    technicians = relationship(
+        "Technician", back_populates="workshop", cascade="all, delete-orphan"
+    )

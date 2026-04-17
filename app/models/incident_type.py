@@ -13,7 +13,9 @@ class IncidentType(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("nombre", String(100), nullable=False, unique=True)
     description: Mapped[str | None] = mapped_column("descripcion", String(255))
-    status: Mapped[str] = mapped_column("estado", String(30), nullable=False, server_default="ACTIVO")
+    status: Mapped[str] = mapped_column(
+        "estado", String(30), nullable=False, server_default="ACTIVO"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )
