@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
@@ -19,6 +21,12 @@ class PaymentService:
         if not payment:
             raise NotFoundError("Payment not found")
         return payment
+
+    async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[Payment]:
+        return await self.repo.get_all(skip=skip, limit=limit)
+
+    async def get_by_client(self, client_user_id: int) -> Sequence[Payment]:
+        return await self.repo.get_by_client(client_user_id)
 
     async def update(self, payment_id: int, data: PaymentUpdate) -> Payment:
         payment = await self.get_by_id(payment_id)

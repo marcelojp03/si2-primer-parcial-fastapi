@@ -15,3 +15,23 @@ class IncidentRepository(BaseRepository[Incident]):
         stmt = select(Incident).where(Incident.client_user_id == client_user_id)
         result = await self.session.execute(stmt)
         return result.scalars().all()
+
+    async def get_filtered(
+        self,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        status_id: int | None = None,
+        client_user_id: int | None = None,
+        priority: str | None = None,
+    ) -> Sequence[Incident]:
+        stmt = select(Incident)
+        if status_id is not None:
+            stmt = stmt.where(Incident.incident_status_id == status_id)
+        if client_user_id is not None:
+            stmt = stmt.where(Incident.client_user_id == client_user_id)
+        if priority is not None:
+            stmt = stmt.where(Incident.priority_level == priority)
+        stmt = stmt.order_by(Incident.id.desc()).offset(skip).limit(limit)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()

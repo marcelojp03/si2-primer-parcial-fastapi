@@ -28,6 +28,23 @@ class IncidentService:
     async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[Incident]:
         return await self.repo.get_all(skip=skip, limit=limit)
 
+    async def get_filtered(
+        self,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        status_id: int | None = None,
+        client_user_id: int | None = None,
+        priority: str | None = None,
+    ) -> Sequence[Incident]:
+        return await self.repo.get_filtered(
+            skip=skip,
+            limit=limit,
+            status_id=status_id,
+            client_user_id=client_user_id,
+            priority=priority,
+        )
+
     async def update(self, incident_id: int, data: IncidentUpdate) -> Incident:
         incident = await self.get_by_id(incident_id)
         return await self.repo.update(incident, data.model_dump(exclude_unset=True))

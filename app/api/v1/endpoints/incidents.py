@@ -21,10 +21,22 @@ async def read_incident(incident_id: int, session: DbSession, _current_user: Cur
 
 @router.get("", response_model=list[IncidentRead])
 async def list_incidents(
-    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+    session: DbSession,
+    _current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
+    status_id: int | None = None,
+    client_user_id: int | None = None,
+    priority: str | None = None,
 ):
     svc = IncidentService(session)
-    return await svc.get_all(skip=skip, limit=limit)
+    return await svc.get_filtered(
+        skip=skip,
+        limit=limit,
+        status_id=status_id,
+        client_user_id=client_user_id,
+        priority=priority,
+    )
 
 
 @router.patch("/{incident_id}", response_model=IncidentRead)

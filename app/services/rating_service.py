@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
@@ -19,3 +21,9 @@ class RatingService:
         if not rating:
             raise NotFoundError("Rating not found")
         return rating
+
+    async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[Rating]:
+        return await self.repo.get_all(skip=skip, limit=limit)
+
+    async def get_by_assignment(self, assignment_id: int) -> Rating | None:
+        return await self.repo.get_by_assignment(assignment_id)

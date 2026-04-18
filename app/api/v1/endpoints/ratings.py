@@ -17,3 +17,11 @@ async def create_rating(data: RatingCreate, session: DbSession, _user: ClienteUs
 async def read_rating(rating_id: int, session: DbSession, _current_user: CurrentUser):
     svc = RatingService(session)
     return await svc.get_by_id(rating_id)
+
+
+@router.get("", response_model=list[RatingRead])
+async def list_ratings(
+    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+):
+    svc = RatingService(session)
+    return await svc.get_all(skip=skip, limit=limit)
