@@ -52,9 +52,20 @@ class AssignmentService:
     # ── public API ───────────────────────────────────────
 
     async def find_candidates(
-        self, incident_id: int, *, max_distance_km: float = 50.0
+        self,
+        incident_id: int,
+        *,
+        max_distance_km: float = 50.0,
+        max_candidates: int = 5,
     ) -> Sequence[WorkshopCandidate]:
-        """Score and persist candidate workshops for an incident."""
+        """Score and persist the top-N candidate workshops for an incident.
+
+        Args:
+            incident_id: Incident to find candidates for.
+            max_distance_km: Maximum radius to consider workshops (km).
+            max_candidates: Maximum number of top-scored candidates to persist
+                and notify. Use 0 for unlimited.
+        """
         incident = await self._get_incident(incident_id)
         workshops = await self.workshop_repo.get_all(skip=0, limit=500)
 
@@ -84,15 +95,22 @@ class AssignmentService:
             )
             candidates.append(candidate)
 
-        # Sort by score descending
+        # Sort by score descending and keep top-N
         candidates.sort(key=lambda c: c.score or 0, reverse=True)
+        if max_candidates > 0:
+            candidates = candidates[:max_candidates]
 
         # Persist
         for c in candidates:
             self.session.add(c)
         await self.session.flush()
 
-        logger.info("Found %d candidates for incident %d", len(candidates), incident_id)
+        logger.info(
+            "Found %d candidates (max=%d) for incident %d",
+            len(candidates),
+            max_candidates,
+            incident_id,
+        )
         return candidates
 
     async def assign_best(self, incident_id: int, user_id: int | None = None) -> ServiceAssignment:

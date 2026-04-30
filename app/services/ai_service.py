@@ -119,11 +119,11 @@ class AiService:
         logger.info("transcribe_audio: got %d chars", len(text))
         return text
 
-    # ── 2. Analyze images via GPT-4o Vision ──────────────────────────────
+    # ── 2. Analyze images via GPT-5.4-mini Vision ──────────────────────────────
 
     async def analyze_images(self, image_data_list: list[tuple[bytes, str]]) -> str:
         """
-        Send one or more images to GPT-4o Vision.
+        Send one or more images to GPT-5.4-mini Vision.
         image_data_list: list of (image_bytes, mime_type) tuples.
         Returns a textual description of the visible damage.
         """
@@ -140,7 +140,7 @@ class AiService:
                 }
             )
 
-        logger.info("analyze_images: sending %d image(s) to GPT-4o Vision", len(image_data_list))
+        logger.info("analyze_images: sending %d image(s) to GPT-5.4-mini Vision", len(image_data_list))
         response = await client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": content}],
@@ -160,7 +160,7 @@ class AiService:
         image_analysis: str | None = None,
     ) -> dict:
         """
-        Build a unified prompt with all available info and ask GPT-4o to classify.
+        Build a unified prompt with all available info and ask GPT-5.4-mini to classify.
         Returns parsed JSON dict with classification fields.
         """
         user_parts = [f"Descripción del conductor: {description}"]

@@ -36,5 +36,9 @@ migrations/versions/__pycache__/
 .DS_Store
 Thumbs.db
 
+# Logs
+logs/
+*.log
+
 # Docker
 docker-compose.override.yml

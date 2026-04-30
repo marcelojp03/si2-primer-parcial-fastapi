@@ -29,11 +29,20 @@ class Settings(BaseSettings):
 
     # OpenAI
     OPENAI_API_KEY: str = ""
-    OPENAI_MODEL: str = "gpt-4o"
+    OPENAI_MODEL: str = "gpt-5.4-mini"
 
     # Firebase
     FIREBASE_PROJECT_ID: str = ""
     FIREBASE_CREDENTIALS_FILE: str = "auxilio-mecanico-firebase.json"
+
+    # VPAY
+    VPAY_BASE_URL: str = "https://vpay.com.bo:7778/pro"
+    VPAY_TOKEN: str = ""
+    VPAY_DESTINATION_ACCOUNT: str = "selvi.lecaro"
+    VPAY_BANK: str = "BMSC"
+    VPAY_USER: str = "marcelojunior"
+    VPAY_COMPANY: str = "1"
+    VPAY_VERIFY_SSL: bool = True
 
 
 settings = Settings()

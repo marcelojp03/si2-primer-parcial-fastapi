@@ -30,3 +30,21 @@ class PaymentRead(PaymentBase):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class QRGenerateRequest(BaseModel):
+    gloss: str = Field(..., max_length=100, description="Glosa del cobro, ej: 'SERVICIO AUXILIO MECANICO'")
+    additional_data: str | None = Field(None, max_length=100, description="Glosa secundaria; si se omite se usa gloss")
+
+
+class QRGenerateResponse(BaseModel):
+    payment_id: int
+    id_qr: str
+    qr_base64: str
+
+
+class QRStatusResponse(BaseModel):
+    payment_id: int
+    id_qr: str
+    vpay_status: str
+    paid: bool

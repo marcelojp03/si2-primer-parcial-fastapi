@@ -14,10 +14,19 @@ async def find_candidates(
     session: DbSession,
     _user: AdminTallerOrSuperAdmin,
     max_distance_km: float = 50.0,
+    max_candidates: int = 5,
 ):
-    """Find and score candidate workshops for an incident."""
+    """Find and score candidate workshops for an incident.
+
+    - **max_distance_km**: Radio máximo en km para considerar talleres (default 50).
+    - **max_candidates**: Cantidad máxima de talleres a notificar (0 = sin límite, default 5).
+    """
     svc = AssignmentService(session)
-    return await svc.find_candidates(incident_id, max_distance_km=max_distance_km)
+    return await svc.find_candidates(
+        incident_id,
+        max_distance_km=max_distance_km,
+        max_candidates=max_candidates,
+    )
 
 
 @router.post(

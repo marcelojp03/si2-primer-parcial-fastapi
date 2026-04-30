@@ -1,25 +1,52 @@
+import logging
 from contextlib import asynccontextmanager
+
+from app.core.logging import setup_logging
+
+setup_logging()
+
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+logging.getLogger("watchfiles").setLevel(logging.WARNING)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.api import api_router
 from app.core.config import settings
-from app.core.logging import setup_logging
 from app.db.init_db import init_db
+from app.middlewares.access_log import AccessLogMiddleware
 from app.middlewares.error_handler import ErrorHandlerMiddleware
 from app.middlewares.request_id import RequestIdMiddleware
+
+_log = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Re-aplicar el file handler por si uvicorn lo pisó con su dictConfig (--reload)
     setup_logging()
+
     try:
         await init_db()
     except Exception as e:
-        import logging
+        _log.warning("Could not connect to DB on startup: %s", e)
 
-        logging.getLogger(__name__).warning("Could not connect to DB on startup: %s", e)
+    try:
+        from app.utils.firebase import _get_firebase_app
+        fb = _get_firebase_app()
+        if fb:
+            _log.info("Firebase Admin SDK ready (project=%s)", settings.FIREBASE_PROJECT_ID)
+        else:
+            _log.warning("Firebase not initialized — push notifications will be skipped")
+    except Exception as e:
+        _log.warning("Firebase initialization failed: %s", e)
+
+    # VPAY token status
+    if settings.VPAY_TOKEN:
+        _log.info("VPAY token loaded (len=%d) base_url=%s", len(settings.VPAY_TOKEN), settings.VPAY_BASE_URL)
+    else:
+        _log.warning("VPAY_TOKEN not set — QR payments will run in DEMO mode")
+
     yield
 
 
@@ -31,6 +58,7 @@ def create_app() -> FastAPI:
     )
 
     app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(AccessLogMiddleware)
     app.add_middleware(ErrorHandlerMiddleware)
     app.add_middleware(
         CORSMiddleware,

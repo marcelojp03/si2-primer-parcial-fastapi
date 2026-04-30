@@ -1,7 +1,14 @@
 from fastapi import APIRouter
 
 from app.api.deps import ClienteUser, CurrentUser, DbSession, SuperAdminUser
-from app.schemas.payment import PaymentCreate, PaymentRead, PaymentUpdate
+from app.schemas.payment import (
+    PaymentCreate,
+    PaymentRead,
+    PaymentUpdate,
+    QRGenerateRequest,
+    QRGenerateResponse,
+    QRStatusResponse,
+)
 from app.services.payment_service import PaymentService
 
 router = APIRouter(prefix="/payments", tags=["payments"])
@@ -39,3 +46,40 @@ async def update_payment(
 ):
     svc = PaymentService(session)
     return await svc.update(payment_id, data)
+
+
+# ── VPAY ─────────────────────────────────────────────────────────────────────
+
+@router.post("/{payment_id}/generate-qr", response_model=QRGenerateResponse)
+async def generate_qr(
+    payment_id: int,
+    data: QRGenerateRequest,
+    session: DbSession,
+    _user: ClienteUser,
+):
+    """Genera un código QR de cobro en VPAY para el pago indicado."""
+    svc = PaymentService(session)
+    id_qr, qr_base64 = await svc.generate_qr(
+        payment_id=payment_id,
+        gloss=data.gloss,
+        additional_data=data.additional_data,
+    )
+    return QRGenerateResponse(payment_id=payment_id, id_qr=id_qr, qr_base64=qr_base64)
+
+
+@router.get("/{payment_id}/qr-status", response_model=QRStatusResponse)
+async def qr_status(
+    payment_id: int,
+    session: DbSession,
+    _user: CurrentUser,
+):
+    """Consulta el estado del QR en VPAY. Si está pagado (PAG) actualiza automáticamente el pago y la asignación."""
+    svc = PaymentService(session)
+    vpay_status, paid = await svc.check_qr_status(payment_id)
+    payment = await svc.get_by_id(payment_id)
+    return QRStatusResponse(
+        payment_id=payment_id,
+        id_qr=payment.external_reference or "",
+        vpay_status=vpay_status,
+        paid=paid,
+    )
