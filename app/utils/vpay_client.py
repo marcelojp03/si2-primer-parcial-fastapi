@@ -60,7 +60,7 @@ async def generate_qr(
     }
 
     async with httpx.AsyncClient(
-        base_url=settings.VPAY_BASE_URL.rstrip('/') + '/',
+        base_url=settings.VPAY_BASE_URL.rstrip("/") + "/",
         verify=settings.VPAY_VERIFY_SSL,
         timeout=30.0,
     ) as client:
@@ -96,13 +96,15 @@ async def check_qr_status(id_qr: str) -> str:
     payload = {"operation": id_qr}
 
     async with httpx.AsyncClient(
-        base_url=settings.VPAY_BASE_URL.rstrip('/') + '/',
+        base_url=settings.VPAY_BASE_URL.rstrip("/") + "/",
         verify=settings.VPAY_VERIFY_SSL,
         timeout=30.0,
     ) as client:
         response = await client.post(_STATUS_URL, json=payload, headers=_headers())
 
-    logger.info("VPAY statusQr id_qr=%s status=%s body=%s", id_qr, response.status_code, response.text[:300])
+    logger.info(
+        "VPAY statusQr id_qr=%s status=%s body=%s", id_qr, response.status_code, response.text[:300]
+    )
     try:
         response.raise_for_status()
     except httpx.HTTPStatusError as exc:

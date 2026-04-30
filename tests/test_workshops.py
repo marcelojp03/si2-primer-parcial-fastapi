@@ -51,7 +51,6 @@ async def test_create_workshop_forbidden_for_cliente(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_workshop_requires_auth(client: AsyncClient):
-    uid = _uid()
     resp = await client.post(
         "/api/v1/workshops",
         json={"name": "No Auth", "admin_user_id": 1},

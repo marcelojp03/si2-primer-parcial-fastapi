@@ -13,9 +13,8 @@ bloquear el event loop de asyncio.
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import partial
-from typing import Optional
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
@@ -28,7 +27,7 @@ logger = logging.getLogger(__name__)
 # Cliente boto3 (lazy singleton) — las credenciales se leen del entorno o
 # del rol IAM asignado (App Runner / EC2 / ECS).
 # ---------------------------------------------------------------------------
-_s3: Optional[object] = None
+_s3: object | None = None
 
 
 def _get_client():
@@ -42,13 +41,14 @@ def _get_client():
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _build_key(folder: str, filename: str) -> str:
     """
     Construye una S3 key con timestamp y UUID para evitar colisiones.
 
     Ejemplo: evidencias/incidente-42/2026-04-29T15-02-33Z_8f2c0c7a.jpg
     """
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
     unique = str(uuid.uuid4())[:8]
     return f"{folder}/{timestamp}_{unique}_{filename}"
 
@@ -56,9 +56,20 @@ def _build_key(folder: str, filename: str) -> str:
 def _sanitize_metadata(text: str) -> str:
     """Convierte texto a ASCII puro para metadatos S3 (no acepta no-ASCII)."""
     replacements = {
-        "á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
-        "Á": "A", "É": "E", "Í": "I", "Ó": "O", "Ú": "U",
-        "ñ": "n", "Ñ": "N", "ü": "u", "Ü": "U",
+        "á": "a",
+        "é": "e",
+        "í": "i",
+        "ó": "o",
+        "ú": "u",
+        "Á": "A",
+        "É": "E",
+        "Í": "I",
+        "Ó": "O",
+        "Ú": "U",
+        "ñ": "n",
+        "Ñ": "N",
+        "ü": "u",
+        "Ü": "U",
     }
     for orig, repl in replacements.items():
         text = text.replace(orig, repl)
@@ -68,6 +79,7 @@ def _sanitize_metadata(text: str) -> str:
 # ---------------------------------------------------------------------------
 # Operaciones síncronas (llamadas internamente por los wrappers async)
 # ---------------------------------------------------------------------------
+
 
 def _sync_upload(
     file_bytes: bytes,
@@ -89,7 +101,7 @@ def _sync_upload(
     return s3_key
 
 
-def _sync_download(s3_key: str, bucket: str) -> Optional[bytes]:
+def _sync_download(s3_key: str, bucket: str) -> bytes | None:
     """Descarga objeto de S3 y devuelve sus bytes."""
     client = _get_client()
     response = client.get_object(Bucket=bucket, Key=s3_key)
@@ -116,12 +128,13 @@ def _sync_presigned_url(s3_key: str, bucket: str, expiration: int) -> str:
 # API pública async
 # ---------------------------------------------------------------------------
 
+
 async def upload_file(
     file_bytes: bytes,
     s3_key: str,
     content_type: str = "application/octet-stream",
-    metadata: Optional[dict[str, str]] = None,
-    bucket: Optional[str] = None,
+    metadata: dict[str, str] | None = None,
+    bucket: str | None = None,
 ) -> str:
     """
     Sube un archivo a S3 de forma asíncrona.
@@ -155,8 +168,8 @@ async def upload_file(
 
 async def download_file(
     s3_key: str,
-    bucket: Optional[str] = None,
-) -> Optional[bytes]:
+    bucket: str | None = None,
+) -> bytes | None:
     """
     Descarga un archivo de S3.
 
@@ -176,7 +189,7 @@ async def download_file(
 
 async def delete_file(
     s3_key: str,
-    bucket: Optional[str] = None,
+    bucket: str | None = None,
 ) -> bool:
     """
     Elimina un archivo de S3.
@@ -198,8 +211,8 @@ async def delete_file(
 async def generate_presigned_url(
     s3_key: str,
     expiration: int = 3600,
-    bucket: Optional[str] = None,
-) -> Optional[str]:
+    bucket: str | None = None,
+) -> str | None:
     """
     Genera una URL prefirmada para acceso temporal de lectura.
 
@@ -227,6 +240,7 @@ async def generate_presigned_url(
 # ---------------------------------------------------------------------------
 # Utilidad de conveniencia para construir la key antes de subir
 # ---------------------------------------------------------------------------
+
 
 def build_evidence_key(incidente_id: int, filename: str) -> str:
     """

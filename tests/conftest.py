@@ -38,4 +38,3 @@ async def _register_and_login(ac: AsyncClient, role: str, uid: str) -> dict:
         "user_id": me.json()["id"],
         "email": email,
     }
-

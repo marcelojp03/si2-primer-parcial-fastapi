@@ -6,7 +6,9 @@ from httpx import AsyncClient
 from tests.conftest import _register_and_login, _uid
 
 
-def _incident_payload(vehicle_id: int, client_user_id: int, title: str = "Incidente de prueba") -> dict:
+def _incident_payload(
+    vehicle_id: int, client_user_id: int, title: str = "Incidente de prueba"
+) -> dict:
     return {
         "vehicle_id": vehicle_id,
         "client_user_id": client_user_id,

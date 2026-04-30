@@ -50,6 +50,7 @@ async def update_payment(
 
 # ── VPAY ─────────────────────────────────────────────────────────────────────
 
+
 @router.post("/{payment_id}/generate-qr", response_model=QRGenerateResponse)
 async def generate_qr(
     payment_id: int,

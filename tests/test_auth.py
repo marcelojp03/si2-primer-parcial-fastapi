@@ -65,7 +65,12 @@ async def test_login_success(client: AsyncClient):
     email = f"login_{uid}@test.com"
     await client.post(
         "/api/v1/auth/register",
-        json={"full_name": "Login User", "email": email, "password": "password123", "role": "CLIENTE"},
+        json={
+            "full_name": "Login User",
+            "email": email,
+            "password": "password123",
+            "role": "CLIENTE",
+        },
     )
     resp = await client.post(
         "/api/v1/auth/login",

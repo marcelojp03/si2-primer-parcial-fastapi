@@ -8,15 +8,15 @@ setup_logging()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 logging.getLogger("watchfiles").setLevel(logging.WARNING)
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
-from app.api.v1.api import api_router
-from app.core.config import settings
-from app.db.init_db import init_db
-from app.middlewares.access_log import AccessLogMiddleware
-from app.middlewares.error_handler import ErrorHandlerMiddleware
-from app.middlewares.request_id import RequestIdMiddleware
+from app.api.v1.api import api_router  # noqa: E402
+from app.core.config import settings  # noqa: E402
+from app.db.init_db import init_db  # noqa: E402
+from app.middlewares.access_log import AccessLogMiddleware  # noqa: E402
+from app.middlewares.error_handler import ErrorHandlerMiddleware  # noqa: E402
+from app.middlewares.request_id import RequestIdMiddleware  # noqa: E402
 
 _log = logging.getLogger(__name__)
 
@@ -33,6 +33,7 @@ async def lifespan(app: FastAPI):
 
     try:
         from app.utils.firebase import _get_firebase_app
+
         fb = _get_firebase_app()
         if fb:
             _log.info("Firebase Admin SDK ready (project=%s)", settings.FIREBASE_PROJECT_ID)
@@ -43,7 +44,11 @@ async def lifespan(app: FastAPI):
 
     # VPAY token status
     if settings.VPAY_TOKEN:
-        _log.info("VPAY token loaded (len=%d) base_url=%s", len(settings.VPAY_TOKEN), settings.VPAY_BASE_URL)
+        _log.info(
+            "VPAY token loaded (len=%d) base_url=%s",
+            len(settings.VPAY_TOKEN),
+            settings.VPAY_BASE_URL,
+        )
     else:
         _log.warning("VPAY_TOKEN not set — QR payments will run in DEMO mode")
 

@@ -33,8 +33,12 @@ class PaymentRead(PaymentBase):
 
 
 class QRGenerateRequest(BaseModel):
-    gloss: str = Field(..., max_length=100, description="Glosa del cobro, ej: 'SERVICIO AUXILIO MECANICO'")
-    additional_data: str | None = Field(None, max_length=100, description="Glosa secundaria; si se omite se usa gloss")
+    gloss: str = Field(
+        ..., max_length=100, description="Glosa del cobro, ej: 'SERVICIO AUXILIO MECANICO'"
+    )
+    additional_data: str | None = Field(
+        None, max_length=100, description="Glosa secundaria; si se omite se usa gloss"
+    )
 
 
 class QRGenerateResponse(BaseModel):

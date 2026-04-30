@@ -140,7 +140,9 @@ class AiService:
                 }
             )
 
-        logger.info("analyze_images: sending %d image(s) to GPT-5.4-mini Vision", len(image_data_list))
+        logger.info(
+            "analyze_images: sending %d image(s) to GPT-5.4-mini Vision", len(image_data_list)
+        )
         response = await client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": content}],
