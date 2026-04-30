@@ -49,8 +49,8 @@ jobs:
       - name: Check formatting with black
         run: black --check app tests
 
-      - name: Run database migrations
-        run: alembic upgrade head
+      - name: Create database schema and tables
+        run: python scripts/db/create_tables.py
 
       - name: Run tests
         run: pytest -v
