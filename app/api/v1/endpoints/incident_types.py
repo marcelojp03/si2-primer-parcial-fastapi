@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.deps import CurrentUser, DbSession, SuperAdminUser
-from app.schemas.incident_type import IncidentTypeCreate, IncidentTypeRead, IncidentTypeUpdate
+from app.api.deps import CurrentUser, DbSession, PlatformAdminUser, SuperAdminUser
+from app.schemas.incident_type import IncidentTypeCreate, IncidentTypeRead, IncidentTypeUpdate, SLAUpdate
 from app.services.incident_type_service import IncidentTypeService
 
 router = APIRouter(prefix="/incident-types", tags=["incident-types"])
@@ -35,3 +35,12 @@ async def update_incident_type(
 ):
     svc = IncidentTypeService(session)
     return await svc.update(type_id, data)
+
+
+@router.patch("/{type_id}/sla", response_model=IncidentTypeRead)
+async def configure_sla(
+    type_id: int, data: SLAUpdate, session: DbSession, _admin: PlatformAdminUser
+):
+    """Configura el SLA (en minutos) para un tipo de incidente. Solo ADMIN_PLATAFORMA."""
+    svc = IncidentTypeService(session)
+    return await svc.update(type_id, IncidentTypeUpdate(sla_minutes=data.sla_minutes))

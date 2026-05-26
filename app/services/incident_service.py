@@ -23,10 +23,32 @@ class IncidentService:
             raise NotFoundError("Estado 'PENDIENTE' no encontrado en la base de datos")
         return status_id
 
-    async def create(self, data: IncidentCreate) -> Incident:
+    async def create(self, data: IncidentCreate) -> tuple["Incident", bool]:
+        """Crea un incidente. Retorna (incident, created).
+
+        Si ``data.client_uuid`` está presente y ya existe un incidente con ese UUID,
+        retorna (existing, False) para que el endpoint responda 409.
+        """
+        if data.client_uuid:
+            existing = await self.repo.get_by_uuid(data.client_uuid)
+            if existing:
+                return existing, False
+
         status_id = await self._get_pendiente_status_id()
-        incident = Incident(**data.model_dump(), incident_status_id=status_id)
-        return await self.repo.create(incident)
+        dump = data.model_dump()
+        incident = Incident(
+            client_user_id=dump["client_user_id"],
+            vehicle_id=dump["vehicle_id"],
+            title=dump["title"],
+            description_text=dump.get("description_text"),
+            reference_address=dump.get("reference_address"),
+            latitude=dump.get("latitude"),
+            longitude=dump.get("longitude"),
+            requires_tow=dump.get("requires_tow", False),
+            client_uuid=dump.get("client_uuid"),
+            incident_status_id=status_id,
+        )
+        return await self.repo.create(incident), True
 
     async def get_by_id(self, incident_id: int) -> Incident:
         incident = await self.repo.get_by_id(incident_id)

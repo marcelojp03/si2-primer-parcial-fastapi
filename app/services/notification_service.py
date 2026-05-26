@@ -8,6 +8,8 @@ from app.models.notification import Notification
 from app.repositories.notification_repository import NotificationRepository
 from app.schemas.notification import NotificationCreate
 from app.utils.firebase import send_push_notification
+from app.ws.events import NotificationPayload, build_message
+from app.ws.manager import ws_manager
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +25,21 @@ class NotificationService:
     async def create_and_push(
         self, data: NotificationCreate, device_token: str | None = None
     ) -> Notification:
-        """Create a DB notification record and optionally send a push via FCM."""
+        """Create a DB notification record, emit WS, and optionally send FCM push."""
         notification = await self.create(data)
+
+        # Always emit to the user's personal WebSocket channel
+        if data.user_id:
+            ws_payload = NotificationPayload(
+                notification_id=notification.id,
+                title=data.title,
+                body=data.message,
+                channel=data.channel,
+            )
+            await ws_manager.send_to_user(
+                data.user_id,
+                build_message("notification.new", ws_payload),
+            )
 
         if device_token and data.channel == "PUSH":
             extra = {"incident_id": str(data.incident_id)} if data.incident_id else {}

@@ -11,6 +11,11 @@ class IncidentRepository(BaseRepository[Incident]):
     def __init__(self, session: AsyncSession):
         super().__init__(Incident, session)
 
+    async def get_by_uuid(self, client_uuid: str) -> Incident | None:
+        stmt = select(Incident).where(Incident.client_uuid == client_uuid)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_client_user_id(self, client_user_id: int) -> Sequence[Incident]:
         stmt = select(Incident).where(Incident.client_user_id == client_user_id)
         result = await self.session.execute(stmt)

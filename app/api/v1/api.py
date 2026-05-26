@@ -14,9 +14,11 @@ from app.api.v1.endpoints import (
     notifications,
     payments,
     ratings,
+    reports,
     specialties,
     technician_specialties,
     technicians,
+    tenants,
     users,
     vehicles,
     workshop_schedules,
@@ -29,6 +31,7 @@ api_router = APIRouter()
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
 api_router.include_router(users.router)
+api_router.include_router(tenants.router)
 api_router.include_router(workshops.router)
 api_router.include_router(workshop_schedules.router)
 api_router.include_router(workshop_specialties.router)
@@ -47,3 +50,4 @@ api_router.include_router(technicians.router)
 api_router.include_router(technician_specialties.router)
 api_router.include_router(ratings.router)
 api_router.include_router(metrics.router)
+api_router.include_router(reports.router)

@@ -15,6 +15,7 @@ class IncidentBase(BaseModel):
 
 class IncidentCreate(IncidentBase):
     client_user_id: int
+    client_uuid: str | None = None  # UUID v4 generado por el cliente para idempotencia
 
 
 class IncidentUpdate(BaseModel):
@@ -29,6 +30,7 @@ class IncidentUpdate(BaseModel):
 class IncidentRead(IncidentBase):
     id: int
     client_user_id: int
+    client_uuid: str | None
     incident_type_id: int | None
     incident_status_id: int
     priority_level: str | None

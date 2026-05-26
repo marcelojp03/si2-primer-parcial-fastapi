@@ -114,5 +114,7 @@ def require_tenant():
 
 
 AdminPlataformaUser = Annotated[User, Depends(_require_platform_admin)]
+# Alias en inglés para consistencia con instrucciones del proyecto
+PlatformAdminUser = AdminPlataformaUser
 TenantScopedUser = Annotated[User, Depends(require_tenant())]
 TenantId = Annotated[int | None, Depends(get_tenant_id_from_token)]
