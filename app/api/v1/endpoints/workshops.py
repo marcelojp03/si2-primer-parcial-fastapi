@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.deps import AdminTallerOrSuperAdmin, CurrentUser, DbSession
+from app.api.deps import AdminTallerOrSuperAdmin, CurrentUser, DbSession, TenantId
 from app.schemas.workshop import WorkshopCreate, WorkshopRead, WorkshopUpdate
 from app.services.workshop_service import WorkshopService
 
@@ -8,9 +8,14 @@ router = APIRouter(prefix="/workshops", tags=["workshops"])
 
 
 @router.post("", response_model=WorkshopRead, status_code=201)
-async def create_workshop(data: WorkshopCreate, session: DbSession, _user: AdminTallerOrSuperAdmin):
+async def create_workshop(
+    data: WorkshopCreate,
+    session: DbSession,
+    _user: AdminTallerOrSuperAdmin,
+    tenant_id: TenantId,
+):
     svc = WorkshopService(session)
-    return await svc.create(data)
+    return await svc.create(data, tenant_id=tenant_id)
 
 
 @router.get("/{workshop_id}", response_model=WorkshopRead)

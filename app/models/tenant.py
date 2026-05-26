@@ -1,19 +1,18 @@
-from sqlalchemy import BigInteger, DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import BigInteger, DateTime, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
 SCHEMA = "auxilio_mecanico"
 
 
-class IncidentType(Base):
-    __tablename__ = "tipos_incidente"
+class Tenant(Base):
+    __tablename__ = "tenants"
     __table_args__ = {"schema": SCHEMA}
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column("nombre", String(100), nullable=False, unique=True)
-    description: Mapped[str | None] = mapped_column("descripcion", String(255))
-    sla_minutes: Mapped[int | None] = mapped_column("sla_minutos", Integer, nullable=True)
+    name: Mapped[str] = mapped_column("nombre", String(150), nullable=False)
+    slug: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
     status: Mapped[str] = mapped_column(
         "estado", String(30), nullable=False, server_default="ACTIVO"
     )
@@ -23,3 +22,7 @@ class IncidentType(Base):
     updated_at: Mapped[str] = mapped_column(
         "fecha_actualizacion", DateTime, nullable=False, server_default=func.now()
     )
+
+    # Relationships
+    workshops = relationship("Workshop", back_populates="tenant")
+    users = relationship("User", back_populates="tenant", foreign_keys="User.tenant_id")

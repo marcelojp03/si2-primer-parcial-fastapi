@@ -24,6 +24,11 @@ class ServiceAssignment(Base):
         ForeignKey(f"{SCHEMA}.talleres.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
+    tenant_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey(f"{SCHEMA}.tenants.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     technician_id: Mapped[int | None] = mapped_column(
         "tecnico_id",
         BigInteger,

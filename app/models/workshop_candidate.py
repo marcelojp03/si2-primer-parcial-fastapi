@@ -32,10 +32,14 @@ class WorkshopCandidate(Base):
         "fue_notificado", Boolean, nullable=False, server_default="false"
     )
     notified_at: Mapped[str | None] = mapped_column("fecha_notificacion", DateTime)
+    invitation_deadline: Mapped[str | None] = mapped_column("fecha_limite_respuesta", DateTime)
     response_status: Mapped[str] = mapped_column(
         "estado_respuesta", String(30), nullable=False, server_default="PENDIENTE"
     )
     responded_at: Mapped[str | None] = mapped_column("fecha_respuesta", DateTime)
+    response_time_seconds: Mapped[int | None] = mapped_column(
+        "tiempo_respuesta_segundos", Integer
+    )
     response_note: Mapped[str | None] = mapped_column("observacion_respuesta", String(255))
 
     # Relationships

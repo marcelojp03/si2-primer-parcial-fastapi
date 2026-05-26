@@ -37,5 +37,9 @@ class AuthService:
         user = await self.repo.get_by_email(data.email)
         if not user or not verify_password(data.password, user.password_hash):
             raise UnauthorizedError("Invalid email or password")
-        token = create_access_token(subject=user.id)
+        token = create_access_token(
+            subject=user.id,
+            tenant_id=user.tenant_id,
+            is_platform_admin=bool(user.is_platform_admin),
+        )
         return TokenResponse(access_token=token)

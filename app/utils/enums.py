@@ -4,6 +4,7 @@ import enum
 class UserRole(enum.StrEnum):
     SUPERADMIN = "superadmin"
     ADMIN_TALLER = "admin_taller"
+    ADMIN_PLATAFORMA = "admin_plataforma"
     CLIENTE = "cliente"
 
 
@@ -41,6 +42,7 @@ class CandidateResponseStatus(enum.StrEnum):
     PENDIENTE = "pendiente"
     ACEPTADO = "aceptado"
     RECHAZADO = "rechazado"
+    EXPIRADO = "expirado"
 
 
 class AssignmentStatus(enum.StrEnum):

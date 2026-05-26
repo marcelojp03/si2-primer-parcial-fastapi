@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, DateTime, String, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -22,6 +22,14 @@ class User(Base):
     status: Mapped[str] = mapped_column(
         "estado", String(30), nullable=False, server_default="ACTIVO"
     )
+    tenant_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey(f"{SCHEMA}.tenants.id", onupdate="CASCADE", ondelete="SET NULL"),
+        nullable=True,
+    )
+    is_platform_admin: Mapped[bool] = mapped_column(
+        "es_admin_plataforma", Boolean, nullable=False, server_default="false"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )
@@ -30,6 +38,7 @@ class User(Base):
     )
 
     # Relationships
+    tenant = relationship("Tenant", back_populates="users", foreign_keys=[tenant_id])
     workshop = relationship("Workshop", back_populates="admin_user", uselist=False)
     vehicles = relationship("Vehicle", back_populates="user")
     incidents = relationship("Incident", back_populates="client_user")

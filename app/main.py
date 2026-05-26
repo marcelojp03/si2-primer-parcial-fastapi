@@ -75,6 +75,11 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router, prefix=settings.API_V1_STR)
 
+    # WebSocket endpoint (no prefix — clients connect to ws://host/ws)
+    from app.ws.router import router as ws_router
+
+    app.include_router(ws_router)
+
     return app
 
 

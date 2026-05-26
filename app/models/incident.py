@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -33,6 +34,9 @@ class Incident(Base):
         BigInteger,
         ForeignKey(f"{SCHEMA}.estados_incidente.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
+    )
+    client_uuid: Mapped[str | None] = mapped_column(
+        "uuid_cliente", UUID(as_uuid=False), unique=True, nullable=True
     )
     title: Mapped[str] = mapped_column("titulo", String(150), nullable=False)
     description_text: Mapped[str | None] = mapped_column("descripcion_texto", Text)
@@ -71,5 +75,8 @@ class Incident(Base):
     )
     workshop_candidates = relationship(
         "WorkshopCandidate", back_populates="incident", cascade="all, delete-orphan"
+    )
+    location_tracks = relationship(
+        "IncidentLocationTrack", back_populates="incident", cascade="all, delete-orphan"
     )
     assignment = relationship("ServiceAssignment", back_populates="incident", uselist=False)

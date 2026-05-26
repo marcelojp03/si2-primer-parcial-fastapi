@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Numeric, String, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -18,6 +18,11 @@ class Workshop(Base):
         nullable=False,
         unique=True,
     )
+    tenant_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey(f"{SCHEMA}.tenants.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     name: Mapped[str] = mapped_column("nombre", String(150), nullable=False)
     description: Mapped[str | None] = mapped_column("descripcion", String(255))
     phone: Mapped[str | None] = mapped_column("telefono", String(30))
@@ -34,6 +39,18 @@ class Workshop(Base):
     status: Mapped[str] = mapped_column(
         "estado", String(30), nullable=False, server_default="ACTIVO"
     )
+    reputation_score: Mapped[float] = mapped_column(
+        "puntaje_reputacion", Numeric(5, 2), nullable=False, server_default="100"
+    )
+    invitations_received: Mapped[int] = mapped_column(
+        "invitaciones_recibidas", Integer, nullable=False, server_default="0"
+    )
+    invitations_responded: Mapped[int] = mapped_column(
+        "invitaciones_respondidas", Integer, nullable=False, server_default="0"
+    )
+    invitations_ignored: Mapped[int] = mapped_column(
+        "invitaciones_ignoradas", Integer, nullable=False, server_default="0"
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )
@@ -42,6 +59,7 @@ class Workshop(Base):
     )
 
     # Relationships
+    tenant = relationship("Tenant", back_populates="workshops")
     admin_user = relationship("User", back_populates="workshop")
     schedules = relationship(
         "WorkshopSchedule", back_populates="workshop", cascade="all, delete-orphan"

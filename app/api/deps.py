@@ -61,3 +61,58 @@ AdminTallerOrSuperAdmin = Annotated[
 ]
 ClienteUser = Annotated[User, Depends(require_role(UserRole.CLIENTE))]
 ClienteOrSuperAdmin = Annotated[User, Depends(require_role(UserRole.CLIENTE, UserRole.SUPERADMIN))]
+
+
+# ── Multi-tenant helpers ────────────────────────────────────────
+
+async def _require_platform_admin(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """Guard: user must be SUPERADMIN with is_platform_admin = True in the JWT."""
+    payload = decode_access_token(token)
+    if payload is None:
+        raise UnauthorizedError("Invalid or expired token")
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise UnauthorizedError("Invalid token payload")
+    repo = UserRepository(session)
+    user = await repo.get_by_id(int(user_id))
+    if user is None:
+        raise UnauthorizedError("User not found")
+    if not payload.get("is_platform_admin", False):
+        raise ForbiddenError("Platform administrator access required")
+    return user
+
+
+def get_tenant_id_from_token(
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> int | None:
+    """Extract tenant_id claim from JWT. Returns None for CLIENTE / ADMIN_PLATAFORMA."""
+    payload = decode_access_token(token)
+    if payload is None:
+        raise UnauthorizedError("Invalid or expired token")
+    raw = payload.get("tenant_id")
+    return int(raw) if raw is not None else None
+
+
+def require_tenant():
+    """Dependency factory: ensures the caller has a tenant_id in JWT (ADMIN_TALLER)."""
+
+    async def _check_tenant(
+        token: Annotated[str, Depends(oauth2_scheme)],
+        current_user: Annotated[User, Depends(get_current_user)],
+    ) -> User:
+        payload = decode_access_token(token)
+        if payload is None:
+            raise UnauthorizedError("Invalid or expired token")
+        if payload.get("tenant_id") is None:
+            raise ForbiddenError("This endpoint requires a tenant-scoped account")
+        return current_user
+
+    return _check_tenant
+
+
+AdminPlataformaUser = Annotated[User, Depends(_require_platform_admin)]
+TenantScopedUser = Annotated[User, Depends(require_tenant())]
+TenantId = Annotated[int | None, Depends(get_tenant_id_from_token)]
