@@ -193,6 +193,8 @@ async def run_ai_analysis(
         image_files=image_evidence_files,
     )
 
+    import asyncio
+
     service = AiService(session)
     analysis = await service.run_analysis(
         incident_id=incident_id,
@@ -201,16 +203,35 @@ async def run_ai_analysis(
         image_data_list=image_data_list or None,
     )
 
-    candidates = await AssignmentService(session).generate_candidates_if_missing(incident_id)
-    logger.info(
-        "run_ai_analysis: auto candidates incident=%d count=%d",
-        incident_id,
-        len(candidates),
-    )
+    # Reintentar generación de candidatos hasta 3 veces con backoff
+    candidates = None
+    assignment_svc = AssignmentService(session)
+    for attempt in range(1, 4):
+        try:
+            candidates = await assignment_svc.generate_candidates_if_missing(incident_id)
+            if candidates:
+                break
+        except Exception as e:
+            logger.warning(
+                "Candidate generation attempt %d/3 failed for incident %d: %s",
+                attempt,
+                incident_id,
+                e,
+            )
+            if attempt == 3:
+                raise
+            await asyncio.sleep(attempt * 2)
 
-    if not candidates:
+    if candidates:
+        logger.info(
+            "run_ai_analysis: auto candidates incident=%d count=%d",
+            incident_id,
+            len(candidates),
+        )
+    else:
         logger.warning(
-            "run_ai_analysis: no candidates generated for incident=%d",
+            "run_ai_analysis: no candidates found for incident=%d "
+            "(no workshops nearby or all filtered out)",
             incident_id,
         )
 
