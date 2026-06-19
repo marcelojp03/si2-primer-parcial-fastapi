@@ -1,3 +1,4 @@
+import re
 from collections.abc import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,7 +28,16 @@ class WorkshopService:
         return default.id
 
     async def create(self, data: WorkshopCreate, tenant_id: int | None = None) -> Workshop:
-        resolved_tenant_id = await self._resolve_tenant_id(tenant_id)
+        # If no tenant_id provided, auto-create a tenant (1:1 workshop <-> tenant)
+        if tenant_id is None:
+            from app.models.tenant import Tenant
+            slug = re.sub(r'[^a-z0-9]', '-', data.name.lower().strip())[:50]
+            tenant = Tenant(name=data.name, slug=slug)
+            self._session.add(tenant)
+            await self._session.flush()
+            resolved_tenant_id = tenant.id
+        else:
+            resolved_tenant_id = await self._resolve_tenant_id(tenant_id)
         workshop = Workshop(**data.model_dump(), tenant_id=resolved_tenant_id)
         return await self.repo.create(workshop)
 
@@ -39,6 +49,9 @@ class WorkshopService:
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[Workshop]:
         return await self.repo.get_all(skip=skip, limit=limit)
+
+    async def get_by_tenant(self, tenant_id: int, skip: int = 0, limit: int = 100) -> Sequence[Workshop]:
+        return await self.repo.get_by_tenant(tenant_id, skip=skip, limit=limit)
 
     async def update(self, workshop_id: int, data: WorkshopUpdate) -> Workshop:
         workshop = await self.get_by_id(workshop_id)

@@ -45,6 +45,7 @@ class IncidentService:
             latitude=dump.get("latitude"),
             longitude=dump.get("longitude"),
             requires_tow=dump.get("requires_tow", False),
+            service_modality=dump.get("service_modality", "A_DOMICILIO"),
             client_uuid=dump.get("client_uuid"),
             incident_status_id=status_id,
         )

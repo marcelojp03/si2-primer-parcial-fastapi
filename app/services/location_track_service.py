@@ -1,10 +1,12 @@
 import logging
 from datetime import UTC, datetime
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import ForbiddenError, NotFoundError
 from app.models.incident_location_track import IncidentLocationTrack
+from app.models.service_assignment import ServiceAssignment
 from app.repositories.incident_location_track_repository import IncidentLocationTrackRepository
 from app.repositories.incident_repository import IncidentRepository
 from app.ws.events import LocationUpdatedPayload, build_message
@@ -17,13 +19,30 @@ class LocationTrackService:
     def __init__(self, session: AsyncSession):
         self.repo = IncidentLocationTrackRepository(session)
         self.incident_repo = IncidentRepository(session)
+        self._session = session
 
     async def add_point(
-        self, incident_id: int, latitude: float, longitude: float
+        self, incident_id: int, latitude: float, longitude: float,
+        user=None,
     ) -> IncidentLocationTrack:
         incident = await self.incident_repo.get_by_id(incident_id)
         if not incident:
             raise NotFoundError("Incident not found")
+
+        # If user is a TECNICO, validate they are assigned to this incident
+        if user and user.role.lower() == "tecnico":
+            from app.repositories.technician_repository import TechnicianRepository
+            tech_repo = TechnicianRepository(self._session)
+            tech = await tech_repo.get_by_user_id(user.id)
+            if not tech:
+                raise ForbiddenError("Technician profile not found")
+            stmt = select(ServiceAssignment.id).where(
+                ServiceAssignment.incident_id == incident_id,
+                ServiceAssignment.technician_id == tech.id,
+            )
+            result = await self._session.execute(stmt)
+            if not result.scalar_one_or_none():
+                raise ForbiddenError("You are not assigned to this incident")
 
         track = await self.repo.add_point(incident_id, latitude, longitude)
 

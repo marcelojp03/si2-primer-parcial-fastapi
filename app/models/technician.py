@@ -20,6 +20,12 @@ class Technician(Base):
     full_name: Mapped[str] = mapped_column("nombre_completo", String(150), nullable=False)
     ci: Mapped[str | None] = mapped_column(String(30))
     phone: Mapped[str | None] = mapped_column("telefono", String(30))
+    user_id: Mapped[int | None] = mapped_column(
+        "usuario_id",
+        BigInteger,
+        ForeignKey(f"{SCHEMA}.usuarios.id", onupdate="CASCADE", ondelete="SET NULL"),
+        nullable=True,
+    )
     availability_status: Mapped[str] = mapped_column(
         "estado_disponibilidad", String(30), nullable=False, server_default="DISPONIBLE"
     )

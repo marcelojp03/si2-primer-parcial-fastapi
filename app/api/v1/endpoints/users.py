@@ -1,6 +1,8 @@
 from fastapi import APIRouter
+from fastapi import Response
 
 from app.api.deps import CurrentUser, DbSession, SuperAdminUser
+from app.schemas.fcm import FCMTokenCreate
 from app.schemas.user import UserRead, UserUpdate
 from app.services.user_service import UserService
 
@@ -30,3 +32,15 @@ async def update_user(
 ):
     svc = UserService(session)
     return await svc.update(user_id, data)
+
+
+@router.post("/fcm-token")
+async def register_fcm_token(
+    data: FCMTokenCreate,
+    session: DbSession,
+    current_user: CurrentUser,
+):
+    """Register or update the FCM push notification token for the current user."""
+    current_user.fcm_token = data.fcm_token
+    await session.flush()
+    return Response(status_code=200, content="OK")

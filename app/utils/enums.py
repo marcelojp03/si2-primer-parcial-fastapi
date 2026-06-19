@@ -4,7 +4,7 @@ import enum
 class UserRole(enum.StrEnum):
     SUPERADMIN = "superadmin"
     ADMIN_TALLER = "admin_taller"
-    ADMIN_PLATAFORMA = "admin_plataforma"
+    TECNICO = "tecnico"
     CLIENTE = "cliente"
 
 

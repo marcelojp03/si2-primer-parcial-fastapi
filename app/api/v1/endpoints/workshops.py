@@ -26,9 +26,15 @@ async def read_workshop(workshop_id: int, session: DbSession, _current_user: Cur
 
 @router.get("", response_model=list[WorkshopRead])
 async def list_workshops(
-    session: DbSession, _current_user: CurrentUser, skip: int = 0, limit: int = 100
+    session: DbSession,
+    current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
 ):
     svc = WorkshopService(session)
+    tenant_id = current_user.tenant_id
+    if tenant_id is not None:
+        return await svc.get_by_tenant(tenant_id, skip=skip, limit=limit)
     return await svc.get_all(skip=skip, limit=limit)
 
 

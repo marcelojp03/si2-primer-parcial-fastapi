@@ -146,7 +146,7 @@ class AiService:
         response = await client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": content}],
-            max_tokens=300,
+            max_completion_tokens=300,
             temperature=0.2,
         )
         result = response.choices[0].message.content.strip()
@@ -261,6 +261,11 @@ class AiService:
             "confidence_score": classification.get("confidence_score", 0),
             "raw_response_json": json.dumps(classification, ensure_ascii=False),
         }
+
+        if predicted_type_id is not None:
+            incident.incident_type_id = predicted_type_id
+        incident.priority_level = classification.get("priority_level")
+        incident.requires_tow = classification.get("requires_tow", False)
 
         if existing:
             for key, value in analysis_data.items():

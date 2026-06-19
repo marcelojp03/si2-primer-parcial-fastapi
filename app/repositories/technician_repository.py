@@ -15,3 +15,8 @@ class TechnicianRepository(BaseRepository[Technician]):
         stmt = select(Technician).where(Technician.workshop_id == workshop_id)
         result = await self.session.execute(stmt)
         return result.scalars().all()
+
+    async def get_by_user_id(self, user_id: int) -> Technician | None:
+        stmt = select(Technician).where(Technician.user_id == user_id)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

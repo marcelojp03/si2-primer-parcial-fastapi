@@ -41,6 +41,9 @@ class WorkshopCandidate(Base):
         "tiempo_respuesta_segundos", Integer
     )
     response_note: Mapped[str | None] = mapped_column("observacion_respuesta", String(255))
+    quotation_estimated_cost: Mapped[float | None] = mapped_column("costo_cotizacion", Numeric(10, 2))
+    quotation_completion_minutes: Mapped[int | None] = mapped_column("tiempo_cotizacion_min", Integer)
+    quotation_description: Mapped[str | None] = mapped_column("descripcion_cotizacion", String(500))
 
     # Relationships
     incident = relationship("Incident", back_populates="workshop_candidates")

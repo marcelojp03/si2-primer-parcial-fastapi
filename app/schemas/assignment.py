@@ -23,6 +23,9 @@ class AssignmentUpdate(BaseModel):
     performed_service_description: str | None = None
     final_cost: float | None = Field(None, ge=0)
     final_notes: str | None = None
+    quotation_status: str | None = None
+    quotation_description: str | None = None
+    estimated_completion_minutes: int | None = None
 
 
 class AssignmentRead(AssignmentBase):
@@ -34,6 +37,9 @@ class AssignmentRead(AssignmentBase):
     estimated_cost: float | None
     final_cost: float | None
     assignment_status: str
+    quotation_status: str | None = None
+    quotation_description: str | None = None
+    estimated_completion_minutes: int | None = None
     final_notes: str | None
     assigned_at: datetime
     created_at: datetime

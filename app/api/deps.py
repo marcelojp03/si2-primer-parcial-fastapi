@@ -59,6 +59,9 @@ AdminTallerUser = Annotated[User, Depends(require_role(UserRole.ADMIN_TALLER))]
 AdminTallerOrSuperAdmin = Annotated[
     User, Depends(require_role(UserRole.ADMIN_TALLER, UserRole.SUPERADMIN))
 ]
+AdminTallerTecnicoOrSuperAdmin = Annotated[
+    User, Depends(require_role(UserRole.ADMIN_TALLER, UserRole.TECNICO, UserRole.SUPERADMIN))
+]
 ClienteUser = Annotated[User, Depends(require_role(UserRole.CLIENTE))]
 ClienteOrSuperAdmin = Annotated[User, Depends(require_role(UserRole.CLIENTE, UserRole.SUPERADMIN))]
 

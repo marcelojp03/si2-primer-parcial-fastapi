@@ -23,6 +23,7 @@ class Vehicle(Base):
     manufacture_year: Mapped[int | None] = mapped_column("anio_fabricacion", Integer)
     color: Mapped[str | None] = mapped_column(String(50))
     notes: Mapped[str | None] = mapped_column("observaciones", String(255))
+    photo_url: Mapped[str | None] = mapped_column("foto_url", String(500))
     status: Mapped[str] = mapped_column(
         "estado", String(30), nullable=False, server_default="ACTIVO"
     )

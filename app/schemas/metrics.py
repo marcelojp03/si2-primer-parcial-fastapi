@@ -1,4 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+
+class ZoneIncidentCount(BaseModel):
+    lat: float
+    lng: float
+    count: int = 0
+    label: str = ""
+
+
+class WorkshopEfficiency(BaseModel):
+    workshop_id: int
+    name: str
+    score: float = 0.0
+    avg_response_minutes: float | None = None
+    completion_rate: float | None = None
+    reputation_score: float | None = None
+    total_assignments: int = 0
 
 
 class MetricsDashboard(BaseModel):

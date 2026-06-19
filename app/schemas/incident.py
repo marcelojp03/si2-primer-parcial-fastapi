@@ -11,6 +11,7 @@ class IncidentBase(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
     requires_tow: bool = False
+    service_modality: str = Field(default="A_DOMICILIO", pattern=r"^(A_DOMICILIO|CLIENTE_VE_TALLER)$")
 
 
 class IncidentCreate(IncidentBase):
@@ -30,6 +31,7 @@ class IncidentUpdate(BaseModel):
 class IncidentRead(IncidentBase):
     id: int
     client_user_id: int
+    tenant_id: int | None = None
     client_uuid: str | None
     incident_type_id: int | None
     incident_status_id: int

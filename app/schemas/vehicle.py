@@ -10,6 +10,7 @@ class VehicleBase(BaseModel):
     manufacture_year: int | None = Field(None, ge=1950, le=2100)
     color: str | None = Field(None, max_length=50)
     notes: str | None = Field(None, max_length=255)
+    photo_url: str | None = Field(None, max_length=500)
 
 
 class VehicleCreate(VehicleBase):
@@ -23,6 +24,7 @@ class VehicleUpdate(BaseModel):
     manufacture_year: int | None = Field(None, ge=1950, le=2100)
     color: str | None = Field(None, max_length=50)
     notes: str | None = Field(None, max_length=255)
+    photo_url: str | None = Field(None, max_length=500)
     status: str | None = Field(None, max_length=30)
 
 

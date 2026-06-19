@@ -30,6 +30,9 @@ class User(Base):
     is_platform_admin: Mapped[bool] = mapped_column(
         "es_admin_plataforma", Boolean, nullable=False, server_default="false"
     )
+    fcm_token: Mapped[str | None] = mapped_column(
+        "fcm_token", String(255), nullable=True
+    )
     created_at: Mapped[str] = mapped_column(
         "fecha_creacion", DateTime, nullable=False, server_default=func.now()
     )

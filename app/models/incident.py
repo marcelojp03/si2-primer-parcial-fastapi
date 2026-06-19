@@ -18,6 +18,11 @@ class Incident(Base):
         ForeignKey(f"{SCHEMA}.usuarios.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
+    tenant_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey(f"{SCHEMA}.tenants.id", onupdate="CASCADE", ondelete="SET NULL"),
+        nullable=True,
+    )
     vehicle_id: Mapped[int] = mapped_column(
         "vehiculo_id",
         BigInteger,
@@ -46,6 +51,9 @@ class Incident(Base):
     priority_level: Mapped[str | None] = mapped_column("nivel_prioridad", String(20))
     requires_tow: Mapped[bool] = mapped_column(
         "requiere_remolque", Boolean, nullable=False, server_default="false"
+    )
+    service_modality: Mapped[str] = mapped_column(
+        "modalidad_servicio", String(20), nullable=False, server_default="A_DOMICILIO"
     )
     requested_at: Mapped[str] = mapped_column(
         "fecha_solicitud", DateTime, nullable=False, server_default=func.now()

@@ -56,6 +56,15 @@ class ServiceAssignment(Base):
     assignment_status: Mapped[str] = mapped_column(
         "estado_asignacion", String(30), nullable=False, server_default="ASIGNADO"
     )
+    quotation_status: Mapped[str | None] = mapped_column(
+        "estado_cotizacion", String(20), nullable=True
+    )
+    quotation_description: Mapped[str | None] = mapped_column(
+        "descripcion_cotizacion", Text, nullable=True
+    )
+    estimated_completion_minutes: Mapped[int | None] = mapped_column(
+        "tiempo_estimado_reparacion_min", Integer, nullable=True
+    )
     final_notes: Mapped[str | None] = mapped_column("observaciones_finales", Text)
     assigned_at: Mapped[str] = mapped_column(
         "fecha_asignacion", DateTime, nullable=False, server_default=func.now()
