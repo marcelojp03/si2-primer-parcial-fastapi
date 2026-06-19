@@ -201,19 +201,17 @@ async def run_ai_analysis(
         image_data_list=image_data_list or None,
     )
 
-    try:
-        candidates = await AssignmentService(session).generate_candidates_if_missing(incident_id)
-        logger.info(
-            "run_ai_analysis: auto candidates incident=%d count=%d",
-            incident_id,
-            len(candidates),
-        )
-    except Exception:
-        await session.rollback()
+    candidates = await AssignmentService(session).generate_candidates_if_missing(incident_id)
+    logger.info(
+        "run_ai_analysis: auto candidates incident=%d count=%d",
+        incident_id,
+        len(candidates),
+    )
+
+    if not candidates:
         logger.warning(
-            "run_ai_analysis: auto candidate generation failed incident=%d",
+            "run_ai_analysis: no candidates generated for incident=%d",
             incident_id,
-            exc_info=True,
         )
 
     return analysis
