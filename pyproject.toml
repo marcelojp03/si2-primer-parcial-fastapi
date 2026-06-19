@@ -18,6 +18,9 @@ dependencies = [
     "boto3>=1.36,<2",
     "openai>=1.60,<2",
     "firebase-admin>=6.6,<7",
+    "google-api-core[grpc]>=2.19,<3",
+    "google-cloud-firestore>=2.19,<3",
+    "google-cloud-storage>=1.37,<3",
 ]
 
 [project.optional-dependencies]
